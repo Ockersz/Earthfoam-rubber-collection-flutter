@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
 import 'package:rubber_collection/collection_details.dart';
 import 'package:rubber_collection/data_storage_helper.dart';
-import 'package:intl/intl.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:rubber_collection/supplier.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -169,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedCollection = null;
       });
 
+      if (!context.mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
 
       showDialog(

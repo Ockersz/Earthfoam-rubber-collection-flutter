@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rubber_collection/data_storage_helper.dart';
 import 'package:rubber_collection/driver.dart';
-import 'package:rubber_collection/supplier.dart';
 
 class AddSuppliers extends StatefulWidget {
   const AddSuppliers({super.key});
@@ -12,13 +11,16 @@ class AddSuppliers extends StatefulWidget {
 }
 
 class _AddSuppliersState extends State<AddSuppliers> {
-  TextEditingController driverUserId = TextEditingController();
-  TextEditingController driverUserName = TextEditingController();
-  DataStorageHelper dataStorageHelper = DataStorageHelper();
+  late TextEditingController driverUserId;
+  late TextEditingController driverUserNameController;
+  late DataStorageHelper dataStorageHelper;
 
   @override
   void initState() {
     super.initState();
+    driverUserId = TextEditingController();
+    driverUserNameController = TextEditingController();
+    dataStorageHelper = DataStorageHelper();
     _getSupplierInfo();
   }
 
@@ -40,7 +42,7 @@ class _AddSuppliersState extends State<AddSuppliers> {
           setState(() {
             selectedDriver = driver;
           });
-          driverUserName.text = selectedDriver.userName;
+          driverUserNameController.text = selectedDriver.userName;
           break;
         }
       }
@@ -50,7 +52,7 @@ class _AddSuppliersState extends State<AddSuppliers> {
         setState(() {
           selectedDriver = driver;
         });
-        driverUserName.text = selectedDriver.userName;
+        driverUserNameController.text = selectedDriver.userName;
         break;
       }
     }
@@ -74,7 +76,7 @@ class _AddSuppliersState extends State<AddSuppliers> {
           setState(() {
             selectedDriver = driver;
           });
-          driverUserName.text = selectedDriver.userName;
+          driverUserNameController.text = selectedDriver.userName;
           break;
         }
       }
@@ -234,7 +236,7 @@ class _AddSuppliersState extends State<AddSuppliers> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               Text(
-                'User Name : ${driverUserName.text}',
+                'User Name : ${driverUserNameController.text}',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const Spacer(),

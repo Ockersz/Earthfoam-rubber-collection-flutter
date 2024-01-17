@@ -7,7 +7,7 @@ void main() {
 }
 
 class HomeTabs extends StatefulWidget {
-  const HomeTabs({Key? key});
+  const HomeTabs({super.key, Key? customKey});
 
   @override
   _HomeTabsState createState() => _HomeTabsState();

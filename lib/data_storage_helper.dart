@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:gson/gson.dart';
 import 'package:http/http.dart' as http;
 import 'package:rubber_collection/collection_details.dart';
@@ -8,8 +9,7 @@ import 'package:rubber_collection/supplier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DataStorageHelper {
-  final String baseURL =
-      "http://192.168.1.15:5000"; //"https://api.hexagonasia.com/api/development";
+  final String baseURL = "https://api.hexagonasia.com/api/development";
   final gson = Gson();
   List<Supplier> supplierList = [];
 
@@ -84,10 +84,14 @@ class DataStorageHelper {
 
         return true;
       } else {
-        print('API Error: ${response.statusCode}');
+        if (kDebugMode) {
+          print('API Error: ${response.statusCode}');
+        }
       }
     } catch (e) {
-      print('Error: $e');
+      if (kDebugMode) {
+        print('Error: $e');
+      }
     }
 
     return false;
@@ -180,10 +184,14 @@ class DataStorageHelper {
 
         return collectionDetailsList;
       } else {
-        print('API Error: ${response.statusCode}');
+        if (kDebugMode) {
+          print('API Error: ${response.statusCode}');
+        }
       }
     } catch (e) {
-      print('Error: $e');
+      if (kDebugMode) {
+        print('Error: $e');
+      }
     }
 
     return [];
