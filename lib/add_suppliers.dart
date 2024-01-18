@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rubber_collection/data_storage_helper.dart';
@@ -87,17 +88,20 @@ class _AddSuppliersState extends State<AddSuppliers> {
     }
   }
 
-  void _downloadSupplierList() {
-    dataStorageHelper.saveSupplierAndDriverList().then((value) {
+  Future<bool> isConnectedToNetwork() async {
+    late ConnectivityResult result;
+    try {
+      result = await Connectivity().checkConnectivity();
+    } catch (e) {
+      if (!context.mounted) return false;
       showDialog(
         context: context,
         barrierColor: Colors.black.withOpacity(0.5),
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Downloaded'),
-            icon: const Icon(Icons.check_circle_outline_sharp,
-                color: Colors.green),
-            content: const Text('Suppliers Downloaded.',
+            title: const Text('Some Error Occurred'),
+            icon: const Icon(Icons.error_outline_outlined, color: Colors.red),
+            content: const Text('No internet connection available.',
                 textAlign: TextAlign.center),
             actions: [
               TextButton(
@@ -110,42 +114,23 @@ class _AddSuppliersState extends State<AddSuppliers> {
           );
         },
       );
-    });
+      return false;
+    }
+    return result != ConnectivityResult.none;
   }
 
-  void _syncCollectionData() {
-    dataStorageHelper.syncData().then((value) {
-      if (value == 'no data') {
+  void _downloadSupplierList() async {
+    if (await isConnectedToNetwork()) {
+      dataStorageHelper.saveSupplierAndDriverList().then((value) {
         showDialog(
           context: context,
           barrierColor: Colors.black.withOpacity(0.5),
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('No Data'),
-              icon: const Icon(Icons.warning),
-              content: const Text('There is no data to sync.',
-                  textAlign: TextAlign.center),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } else if (value == 'ok') {
-        showDialog(
-          context: context,
-          barrierColor: Colors.black.withOpacity(0.5),
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Data Synced'),
+              title: const Text('Downloaded'),
               icon: const Icon(Icons.check_circle_outline_sharp,
                   color: Colors.green),
-              content: const Text('Data synced successfully.',
+              content: const Text('Suppliers Downloaded.',
                   textAlign: TextAlign.center),
               actions: [
                 TextButton(
@@ -158,29 +143,125 @@ class _AddSuppliersState extends State<AddSuppliers> {
             );
           },
         );
-      } else if (value == 'error') {
-        showDialog(
-          context: context,
-          barrierColor: Colors.black.withOpacity(0.5),
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              icon: const Icon(Icons.error_outline_outlined, color: Colors.red),
-              content: const Text('There was an error syncing data.',
-                  textAlign: TextAlign.center),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    });
+      });
+    } else {
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        barrierColor: Colors.black.withOpacity(0.5),
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('No Internet'),
+            icon: const Icon(Icons.error_outline_outlined, color: Colors.red),
+            content: const Text('No internet connection available.',
+                textAlign: TextAlign.center),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _syncCollectionData() async {
+    if (await isConnectedToNetwork()) {
+      dataStorageHelper.syncData().then((value) {
+        if (value == 'no data') {
+          showDialog(
+            context: context,
+            barrierColor: Colors.black.withOpacity(0.5),
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('No Data'),
+                icon: const Icon(Icons.warning),
+                content: const Text('There is no data to sync.',
+                    textAlign: TextAlign.center),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else if (value == 'ok') {
+          showDialog(
+            context: context,
+            barrierColor: Colors.black.withOpacity(0.5),
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Data Synced'),
+                icon: const Icon(Icons.check_circle_outline_sharp,
+                    color: Colors.green),
+                content: const Text('Data synced successfully.',
+                    textAlign: TextAlign.center),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else if (value == 'error') {
+          showDialog(
+            context: context,
+            barrierColor: Colors.black.withOpacity(0.5),
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Error'),
+                icon:
+                    const Icon(Icons.error_outline_outlined, color: Colors.red),
+                content: const Text('There was an error syncing data.',
+                    textAlign: TextAlign.center),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      });
+    } else {
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        barrierColor: Colors.black.withOpacity(0.5),
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('No Internet'),
+            icon: const Icon(Icons.error_outline_outlined, color: Colors.red),
+            content: const Text('No internet connection available.',
+                textAlign: TextAlign.center),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override

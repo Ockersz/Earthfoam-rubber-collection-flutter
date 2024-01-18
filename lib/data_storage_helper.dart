@@ -237,7 +237,7 @@ class DataStorageHelper {
           "trlnNumber": collectionDetails.trlnNumber,
           "typeAmmonia": ammonia,
           "container": collectionDetails.container,
-          "long": collectionDetails.longitude,
+          "lon": collectionDetails.longitude,
           "lat": collectionDetails.latitude,
           "initializedDate": collectionDetails.initializedDate,
           "userName": userName,

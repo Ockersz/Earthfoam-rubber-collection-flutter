@@ -7,7 +7,7 @@
 
 
     <application
-        android:label="rubber_collection"
+        android:label="Earthfoam"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
