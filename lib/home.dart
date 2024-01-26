@@ -69,6 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
     supplierId = 0;
     supplierName = ' ';
     estate = ' ';
+
+    txtLitresController.addListener(updateKilograms);
   }
 
   void _clearFields() {
@@ -206,6 +208,13 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
     }
+  }
+
+  void updateKilograms() {
+    // Conversion rate: 1 liter = 0.975 kgs
+    double liters = double.tryParse(txtLitresController.text) ?? 0;
+    double kilograms = liters * 0.975;
+    txtKgController.text = kilograms.toString();
   }
 
   Future<Position> _determinePosition() async {

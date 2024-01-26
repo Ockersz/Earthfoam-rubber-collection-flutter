@@ -9,7 +9,7 @@ import 'package:rubber_collection/supplier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DataStorageHelper {
-  final String baseURL = "https://api.hexagonasia.com/api/development";
+  final String baseURL = "https://api.hexagonasia.com";
   final gson = Gson();
   List<Supplier> supplierList = [];
 
