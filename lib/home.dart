@@ -271,7 +271,11 @@ class _HomeScreenState extends State<HomeScreen> {
               : supplier.cat01 == 2
                   ? "Non-Organic"
                   : " ";
-          itemmasterid = supplier.itemmasterid;
+          itemmasterid = supplier.cat01 == 1
+              ? 133
+              : supplier.cat01 == 2
+                  ? 127
+                  : 6755;
         });
         break;
       }

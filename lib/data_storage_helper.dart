@@ -23,6 +23,17 @@ class DataStorageHelper {
     return prefs.getString('userId') ?? '';
   }
 
+  Future<String> saveVehicleNumber(String vehicleNumber) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('vehicleNumber', vehicleNumber);
+    return vehicleNumber;
+  }
+
+  Future<String> getVehicleNumber() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('vehicleNumber') ?? '';
+  }
+
   Future<bool> saveSupplierAndDriverList() async {
     try {
       final response =
@@ -38,10 +49,9 @@ class DataStorageHelper {
           final estate = supplierJson['estate'];
           final cscode = supplierJson['cscode'];
           final cat01 = supplierJson['cat01'];
-          final itemmasterid = supplierJson['itemmasterId'];
 
-          final newSupplier = Supplier(int.parse(id), name, estate, cscode,
-              int.parse(cat01), int.parse(itemmasterid));
+          final newSupplier =
+              Supplier(int.parse(id), name, estate, cscode, int.parse(cat01));
           newSuppliers.add(newSupplier);
         }
 
@@ -107,7 +117,7 @@ class DataStorageHelper {
     List<dynamic> jsonList = jsonDecode(json);
     List<Supplier> supplierList = jsonList.map((json) {
       return Supplier(json['id'], json['name'], json['estate'], json['cscode'],
-          json['cat01'], json['itemmasterid']);
+          json['cat01']);
     }).toList();
     return supplierList;
   }
@@ -212,6 +222,7 @@ class DataStorageHelper {
     for (CollectionDetails collectionDetails in collectionDetailsList) {
       var url = Uri.parse('$baseURL/rubbercollection');
       String userName = await getUserName();
+      String vehicleNumber = await getVehicleNumber();
       String ammonia = collectionDetails.typeAmmonia == "High Ammonia"
           ? "HA"
           : collectionDetails.typeAmmonia == "Low Ammonia"
@@ -241,6 +252,7 @@ class DataStorageHelper {
           "lat": collectionDetails.latitude,
           "initializedDate": collectionDetails.initializedDate,
           "userName": userName,
+          "vehiclenum": vehicleNumber,
         }),
       );
 

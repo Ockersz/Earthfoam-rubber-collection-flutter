@@ -14,6 +14,7 @@ class AddSuppliers extends StatefulWidget {
 class _AddSuppliersState extends State<AddSuppliers> {
   late TextEditingController driverUserId;
   late TextEditingController driverUserNameController;
+  late TextEditingController driverVehicleNumberController;
   late DataStorageHelper dataStorageHelper;
 
   @override
@@ -21,15 +22,18 @@ class _AddSuppliersState extends State<AddSuppliers> {
     super.initState();
     driverUserId = TextEditingController();
     driverUserNameController = TextEditingController();
+    driverVehicleNumberController = TextEditingController();
     dataStorageHelper = DataStorageHelper();
     _getSupplierInfo();
   }
 
   void _getSupplierInfo() async {
     String userName = await dataStorageHelper.getUserName();
+    String vehicleNumber = await dataStorageHelper.getVehicleNumber();
 
     setState(() {
       driverUserId.text = userName;
+      driverVehicleNumberController.text = vehicleNumber;
     });
 
     Driver selectedDriver = Driver(0, '');
@@ -56,6 +60,21 @@ class _AddSuppliersState extends State<AddSuppliers> {
         driverUserNameController.text = selectedDriver.userName;
         break;
       }
+    }
+  }
+
+  void _saveVehicleNumber() async {
+    String vehicleNumber = driverVehicleNumberController.text;
+    if (vehicleNumber.isNotEmpty) {
+      DataStorageHelper dataStorageHelper = DataStorageHelper();
+      await dataStorageHelper.saveVehicleNumber(vehicleNumber);
+      setState(() {
+        driverVehicleNumberController.text = vehicleNumber;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please Enter Vehicle Number')),
+      );
     }
   }
 
@@ -268,60 +287,84 @@ class _AddSuppliersState extends State<AddSuppliers> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(height: 50.0),
-              ElevatedButton.icon(
-                onPressed: () {
-                  _downloadSupplierList();
-                },
-                icon: const Icon(Icons.download),
-                label: const Text('Download Supplier List'),
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton.icon(
-                onPressed: () {
-                  _syncCollectionData();
-                },
-                icon: const Icon(Icons.sync),
-                label: const Text('Sync Data'),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: driverUserId,
-                      decoration: const InputDecoration(labelText: 'User ID'),
-                      textAlign: TextAlign.center,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      keyboardType: TextInputType.number,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 50.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _downloadSupplierList();
+                  },
+                  icon: Icon(Icons.download),
+                  label: Text('Download Supplier List'),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _syncCollectionData();
+                  },
+                  icon: Icon(Icons.sync),
+                  label: Text('Sync Data'),
+                ),
+                SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: driverUserId,
+                        decoration: InputDecoration(labelText: 'User ID'),
+                        textAlign: TextAlign.center,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        keyboardType: TextInputType.number,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  ElevatedButton.icon(
-                    onPressed: _saveUserId,
-                    label: const Text('Save User ID'),
-                    icon: const Icon(Icons.save),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 50.0),
-              Text(
-                'User ID: ${driverUserId.text}',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              Text(
-                'User Name : ${driverUserNameController.text}',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const Spacer(),
-            ],
+                    SizedBox(width: 16.0),
+                    ElevatedButton.icon(
+                      onPressed: _saveUserId,
+                      label: Text('Save User ID'),
+                      icon: Icon(Icons.save),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: driverVehicleNumberController,
+                        decoration:
+                            InputDecoration(labelText: 'Vehicle Number'),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(width: 16.0),
+                    ElevatedButton.icon(
+                      onPressed: _saveVehicleNumber,
+                      label: Text('Save Vehicle No.'),
+                      icon: Icon(Icons.save),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 50.0),
+                Text(
+                  'User ID: ${driverUserId.text}',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  'User Name : ${driverUserNameController.text}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  'Vehicle Number : ${driverVehicleNumberController.text}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
           ),
         ),
       ),
