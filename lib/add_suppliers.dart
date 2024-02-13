@@ -293,29 +293,29 @@ class _AddSuppliersState extends State<AddSuppliers> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 50.0),
+                const SizedBox(height: 50.0),
                 ElevatedButton.icon(
                   onPressed: () {
                     _downloadSupplierList();
                   },
-                  icon: Icon(Icons.download),
-                  label: Text('Download Supplier List'),
+                  icon: const Icon(Icons.download),
+                  label: const Text('Download Supplier List'),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton.icon(
                   onPressed: () {
                     _syncCollectionData();
                   },
-                  icon: Icon(Icons.sync),
-                  label: Text('Sync Data'),
+                  icon: const Icon(Icons.sync),
+                  label: const Text('Sync Data'),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: driverUserId,
-                        decoration: InputDecoration(labelText: 'User ID'),
+                        decoration: const InputDecoration(labelText: 'User ID'),
                         textAlign: TextAlign.center,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -323,34 +323,34 @@ class _AddSuppliersState extends State<AddSuppliers> {
                         keyboardType: TextInputType.number,
                       ),
                     ),
-                    SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
                     ElevatedButton.icon(
                       onPressed: _saveUserId,
-                      label: Text('Save User ID'),
-                      icon: Icon(Icons.save),
+                      label: const Text('Save User ID'),
+                      icon: const Icon(Icons.save),
                     ),
                   ],
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: driverVehicleNumberController,
                         decoration:
-                            InputDecoration(labelText: 'Vehicle Number'),
+                            const InputDecoration(labelText: 'Vehicle Number'),
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
                     ElevatedButton.icon(
                       onPressed: _saveVehicleNumber,
-                      label: Text('Save Vehicle No.'),
-                      icon: Icon(Icons.save),
+                      label: const Text('Save Vehicle No.'),
+                      icon: const Icon(Icons.save),
                     ),
                   ],
                 ),
-                SizedBox(height: 50.0),
+                const SizedBox(height: 50.0),
                 Text(
                   'User ID: ${driverUserId.text}',
                   style: Theme.of(context).textTheme.titleLarge,

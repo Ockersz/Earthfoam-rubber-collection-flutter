@@ -50,7 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
   List<CollectionDetails> existingCollectionList = [];
   CollectionDetails? selectedCollection;
 
-  final List<String> containerList = ["Front", "Middle", "Back"];
+  final List<String> containerList = [
+    "Front",
+    "Middle",
+    "Back",
+    "Barrel",
+    "Other"
+  ];
   final List<String> ammoniaList = ["High Ammonia", "Low Ammonia"];
 
   @override
