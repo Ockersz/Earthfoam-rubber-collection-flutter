@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:rubber_collection/data_storage_helper.dart';
 import 'package:rubber_collection/driver.dart';
 
@@ -15,6 +16,10 @@ class _AddSuppliersState extends State<AddSuppliers> {
   late TextEditingController driverUserId;
   late TextEditingController driverUserNameController;
   late TextEditingController driverVehicleNumberController;
+  late TextEditingController driverStartMeterReadingController;
+  late TextEditingController driverEndMeterReadingController;
+  late TextEditingController driverStartMeterReadingSavedOnDate;
+  late TextEditingController driverEndMeterReadingSavedOnDate;
   late DataStorageHelper dataStorageHelper;
 
   @override
@@ -23,6 +28,10 @@ class _AddSuppliersState extends State<AddSuppliers> {
     driverUserId = TextEditingController();
     driverUserNameController = TextEditingController();
     driverVehicleNumberController = TextEditingController();
+    driverStartMeterReadingController = TextEditingController();
+    driverEndMeterReadingController = TextEditingController();
+    driverStartMeterReadingSavedOnDate = TextEditingController();
+    driverEndMeterReadingSavedOnDate = TextEditingController();
     dataStorageHelper = DataStorageHelper();
     _getSupplierInfo();
   }
@@ -30,6 +39,27 @@ class _AddSuppliersState extends State<AddSuppliers> {
   void _getSupplierInfo() async {
     String userName = await dataStorageHelper.getUserName();
     String vehicleNumber = await dataStorageHelper.getVehicleNumber();
+    Map<String, String> startMeterReading =
+        await dataStorageHelper.getStartMeterReading();
+    Map<String, String> endMeterReading =
+        await dataStorageHelper.getEndMeterReading();
+
+    if (startMeterReading.isNotEmpty) {
+      setState(() {
+        driverStartMeterReadingController.text =
+            startMeterReading['startMeterReading']!;
+        driverStartMeterReadingSavedOnDate.text =
+            startMeterReading['readingTime']!;
+      });
+    }
+
+    if (endMeterReading.isNotEmpty) {
+      setState(() {
+        driverEndMeterReadingController.text =
+            endMeterReading['endMeterReading']!;
+        driverEndMeterReadingSavedOnDate.text = endMeterReading['readingTime']!;
+      });
+    }
 
     setState(() {
       driverUserId.text = userName;
@@ -60,6 +90,52 @@ class _AddSuppliersState extends State<AddSuppliers> {
         driverUserNameController.text = selectedDriver.userName;
         break;
       }
+    }
+  }
+
+  void _saveStartMeterReading() async {
+    String startMeterReading = driverStartMeterReadingController.text;
+    String readingTime =
+        DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+    if (startMeterReading.isNotEmpty) {
+      DataStorageHelper dataStorageHelper = DataStorageHelper();
+      await dataStorageHelper.saveStartMeterReading(
+          startMeterReading, readingTime);
+      setState(() {
+        driverStartMeterReadingController.text = startMeterReading;
+        driverStartMeterReadingSavedOnDate.text = readingTime;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please Enter Start Meter Reading')),
+      );
+    }
+  }
+
+  void _saveEndMeterReading() async {
+    String endMeterReading = driverEndMeterReadingController.text;
+    String readingTime =
+        DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+    if (endMeterReading.isNotEmpty) {
+      if (int.parse(endMeterReading) <
+          int.parse(driverStartMeterReadingController.text)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'End Meter Reading should be greater than Start Meter Reading')),
+        );
+        return;
+      }
+      DataStorageHelper dataStorageHelper = DataStorageHelper();
+      await dataStorageHelper.saveEndMeterReading(endMeterReading, readingTime);
+      setState(() {
+        driverEndMeterReadingController.text = endMeterReading;
+        driverEndMeterReadingSavedOnDate.text = readingTime;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please Enter End Meter Reading')),
+      );
     }
   }
 
@@ -226,6 +302,12 @@ class _AddSuppliersState extends State<AddSuppliers> {
                 actions: [
                   TextButton(
                     onPressed: () {
+                      setState(() {
+                        driverStartMeterReadingController.clear();
+                        driverEndMeterReadingController.clear();
+                        driverStartMeterReadingSavedOnDate.clear();
+                        driverEndMeterReadingSavedOnDate.clear();
+                      });
                       Navigator.of(context).pop();
                     },
                     child: const Text('OK'),
@@ -293,7 +375,7 @@ class _AddSuppliersState extends State<AddSuppliers> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 50.0),
+                const SizedBox(height: 20.0),
                 ElevatedButton.icon(
                   onPressed: () {
                     _downloadSupplierList();
@@ -351,6 +433,61 @@ class _AddSuppliersState extends State<AddSuppliers> {
                   ],
                 ),
                 const SizedBox(height: 50.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: driverStartMeterReadingController,
+                        decoration: const InputDecoration(
+                            labelText: 'Start Meter Reading'),
+                        textAlign: TextAlign.center,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    ElevatedButton.icon(
+                      onPressed: _saveStartMeterReading,
+                      label: const Text('Save Reading'),
+                      icon: const Icon(Icons.save),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: driverEndMeterReadingController,
+                        decoration: const InputDecoration(
+                            labelText: 'End Meter Reading'),
+                        textAlign: TextAlign.center,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    ElevatedButton.icon(
+                      onPressed: _saveEndMeterReading,
+                      label: const Text('Save Reading'),
+                      icon: const Icon(Icons.save),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10.0),
+                Text(
+                  'Reading Start Saved : ${driverStartMeterReadingSavedOnDate.text ?? ''}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(
+                  'Reading End Saved : ${driverEndMeterReadingSavedOnDate.text ?? ''}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 30.0),
                 Text(
                   'User ID: ${driverUserId.text}',
                   style: Theme.of(context).textTheme.titleLarge,

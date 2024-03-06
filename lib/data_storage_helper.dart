@@ -207,6 +207,44 @@ class DataStorageHelper {
     return [];
   }
 
+  Future<Map<String, String>> saveStartMeterReading(
+      String startMeterReading, String readingTime) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString("startMeterReading", startMeterReading);
+    sharedPreferences.setString("startMeterReadingTime", readingTime);
+    return {"startMeterReading": startMeterReading, "readingTime": readingTime};
+  }
+
+  Future<Map<String, String>> getStartMeterReading() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String reading = sharedPreferences.getString("startMeterReading") ?? "";
+    String time = sharedPreferences.getString("startMeterReadingTime") ?? "";
+    return {"startMeterReading": reading, "readingTime": time};
+  }
+
+  Future<Map<String, String>> saveEndMeterReading(
+      String endMeterReading, String readingTime) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString("endMeterReading", endMeterReading);
+    sharedPreferences.setString("endMeterReadingTime", readingTime);
+    return {"endMeterReading": endMeterReading, "readingTime": readingTime};
+  }
+
+  Future<Map<String, String>> getEndMeterReading() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String reading = sharedPreferences.getString("endMeterReading") ?? "";
+    String time = sharedPreferences.getString("endMeterReadingTime") ?? "";
+    return {"endMeterReading": reading, "readingTime": time};
+  }
+
+  void clearMeterReading() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString("endMeterReading", "");
+    sharedPreferences.setString("endMeterReadingTime", "");
+    sharedPreferences.setString("startMeterReading", "");
+    sharedPreferences.setString("startMeterReadingTime", "");
+  }
+
   Future<String> syncData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String json = sharedPreferences.getString("collectionList") ?? "";
@@ -218,7 +256,7 @@ class DataStorageHelper {
 
     var client = http.Client();
     bool allDataSynced = true;
-
+    http.Response response = http.Response("", 404);
     for (CollectionDetails collectionDetails in collectionDetailsList) {
       var url = Uri.parse('$baseURL/rubbercollection');
       String userName = await getUserName();
@@ -228,7 +266,7 @@ class DataStorageHelper {
           : collectionDetails.typeAmmonia == "Low Ammonia"
               ? "LA"
               : " ";
-      var response = await client.post(
+      response = await client.post(
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -255,12 +293,32 @@ class DataStorageHelper {
           "vehiclenum": vehicleNumber,
         }),
       );
+    }
+    var url = Uri.parse('$baseURL/rubbercollection/reading');
+    Map<String, String> startMeterReading = await getStartMeterReading();
+    Map<String, String> endMeterReading = await getEndMeterReading();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        clearCollectionList();
-      } else {
-        allDataSynced = false;
-      }
+    response = await client.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "companyId": "1",
+        "userName": await getUserName(),
+        "vehiclenum": await getVehicleNumber(),
+        "startMeterReading": startMeterReading["startMeterReading"],
+        "endMeterReading": endMeterReading["endMeterReading"],
+        "startMeterReadingTime": startMeterReading["readingTime"],
+        "endMeterReadingTime": endMeterReading["readingTime"],
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      clearCollectionList();
+      clearMeterReading();
+    } else {
+      allDataSynced = false;
     }
 
     if (allDataSynced) {
