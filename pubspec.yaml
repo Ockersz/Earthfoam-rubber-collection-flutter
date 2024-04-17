@@ -43,7 +43,8 @@ dependencies:
   intl: ^0.19.0
   geolocator: ^10.1.0
   connectivity_plus: ^5.0.2
-
+  bluetooth_print: ^4.3.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

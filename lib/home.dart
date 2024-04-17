@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
 import 'package:rubber_collection/collection_details.dart';
 import 'package:rubber_collection/data_storage_helper.dart';
+import 'package:rubber_collection/printer_screen.dart';
 import 'package:rubber_collection/supplier.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -209,6 +210,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: const Text('OK'),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              PrintScreen(collectionDetails: collectedObject)));
+                },
+                child: const Text('Print Receipt'),
+              ),
             ],
           );
         },
@@ -244,7 +255,8 @@ class _HomeScreenState extends State<HomeScreen> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-    return await Geolocator.getCurrentPosition();
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
   }
 
   @override
