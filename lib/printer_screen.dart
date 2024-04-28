@@ -1,10 +1,12 @@
 import 'package:bluetooth_print/bluetooth_print.dart';
 import 'package:bluetooth_print/bluetooth_print_model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rubber_collection/collection_details.dart';
 import 'package:rubber_collection/data_storage_helper.dart';
 import 'package:rubber_collection/printer_text_formatter.dart';
 import 'package:rubber_collection/supplier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PrintScreen extends StatefulWidget {
   final CollectionDetails collectionDetails;
@@ -182,31 +184,48 @@ class _PrintScreenWidgetState extends State<PrintScreen> {
                                 PrinterTextFormatter formatter =
                                     PrinterTextFormatter();
 
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                String? userId = prefs.getString('userId');
+
                                 formatter.addSubHeading(
                                     '********************************');
                                 formatter.addHeading('Hexagon');
                                 formatter.addLineBreak();
 
-                                formatter.addSubHeading(
-                                    '--------Rubber Collection-------');
+                                formatter.addCenteredText(
+                                    'Temporary Latex Collection');
+                                formatter.addCenteredText('Receipt');
                                 formatter.addLineBreak();
-                                formatter.addRightValue("TLRN No", ":",
-                                    details.trlnNumber.toString());
+                                formatter.addDateValue(
+                                    'Date :',
+                                    DateFormat("dd/MM/yyyy HH:mm:ss").format(
+                                        DateTime.parse(details.initializedDate
+                                            .toString())));
+                                formatter.addLineBreak();
+                                formatter.addNameValue(
+                                    "TLRN No :", details.trlnNumber.toString());
 
                                 formatter.addLineBreak();
                                 formatter.addNameValue(
                                     "Supplier Name : ", supplierName);
                                 formatter.addLineBreak();
+                                formatter.addNameValue(
+                                    "Supplier ID : ", details.id.toString());
+                                formatter.addLineBreak();
+                                formatter.addNameValue(
+                                    "User ID : ", userId.toString());
+                                formatter.addLineBreak();
                                 formatter.addLineBreak();
                                 formatter.addLineBreak();
                                 formatter.addValue(
-                                    'Litters', ":", details.liters.toString());
-                                formatter.addValue('Kilograms', ":",
-                                    details.kilogram.toString());
+                                    'Liters', ":", "${details.liters} L");
+                                formatter.addValue('Wet Kilograms', ":",
+                                    "${details.kilogram} Kg");
                                 formatter.addValue('Metrolac', ":",
                                     details.metrolac.toString());
-                                formatter.addValue('Temp', ":",
-                                    details.temperature.toString());
+                                formatter.addValue(
+                                    'Temp', ":", "${details.temperature} °C");
                                 formatter.addValue(
                                     'NH3', ":", details.nh3.toString());
                                 formatter.addValue(
@@ -215,7 +234,15 @@ class _PrintScreenWidgetState extends State<PrintScreen> {
                                     'Tank', ":", details.container.toString());
 
                                 formatter.addLineBreak();
+                                formatter.addSubHeading(
+                                    '--------------------------------');
+                                formatter.addLineBreak();
+                                formatter.addCenteredText(
+                                    'Thank you for your service !!');
+                                formatter
+                                    .addCenteredText('HEXAGON ASIA (PVT) Ltd');
 
+                                formatter.addLineBreak();
                                 formatter.addSubHeading(
                                     '********************************');
                                 formatter.addLineBreak();

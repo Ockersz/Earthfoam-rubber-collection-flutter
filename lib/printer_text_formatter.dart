@@ -33,6 +33,16 @@ class PrinterTextFormatter {
     ));
   }
 
+  void addCenteredText(String text) {
+    _textList.add(LineText(
+      type: LineText.TYPE_TEXT,
+      content: text,
+      weight: 1,
+      align: LineText.ALIGN_CENTER,
+      linefeed: 1,
+    ));
+  }
+
   void addNameValue(String name, String value) {
     _textList.add(LineText(
       type: LineText.TYPE_TEXT,
@@ -51,6 +61,26 @@ class PrinterTextFormatter {
       x: 200,
       relativeX: 0,
       linefeed: 2,
+    ));
+  }
+
+  void addDateValue(String date, String value) {
+    _textList.add(LineText(
+      type: LineText.TYPE_TEXT,
+      content: date,
+      weight: 1,
+      align: LineText.ALIGN_LEFT,
+      x: 0,
+      relativeX: 0,
+      linefeed: 0,
+    ));
+    _textList.add(LineText(
+      type: LineText.TYPE_TEXT,
+      content: value,
+      weight: 1,
+      align: LineText.ALIGN_LEFT,
+      relativeX: 130,
+      linefeed: 1,
     ));
   }
 
@@ -78,7 +108,7 @@ class PrinterTextFormatter {
       content: value,
       weight: 1,
       align: LineText.ALIGN_LEFT,
-      x: 300,
+      x: 280,
       relativeX: 0,
       linefeed: 0,
     ));
@@ -99,7 +129,7 @@ class PrinterTextFormatter {
       content: colon,
       weight: 1,
       align: LineText.ALIGN_LEFT,
-      x: 150,
+      x: 170,
       relativeX: 0,
       linefeed: 0,
     ));
@@ -108,7 +138,7 @@ class PrinterTextFormatter {
       content: value,
       weight: 1,
       align: LineText.ALIGN_LEFT,
-      x: 280,
+      x: 250,
       relativeX: 0,
       linefeed: 1,
     ));
